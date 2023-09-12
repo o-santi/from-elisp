@@ -417,46 +417,6 @@ let
       #
       # For example:
       # (a . (b . (c . nil))) -> (a b c)
-      parseDots = tokens:
-        let
-          parseToken = state: token:
-            if token.type == "dot" then
-              if state.inList then
-                state // {
-                  dotted = true;
-                  depthReduction = state.depthReduction + 1;
-                }
-              else
-                throw ''"Dotted pair notation"-dot outside list on line ${toString token.line}''
-            else if isList token.value then
-              let
-                collectionContents = foldl' parseToken {
-                  acc = [];
-                  dotted = false;
-                  inList = token.type == "list";
-                  inherit (state) depthReduction;
-                } token.value;
-              in
-                state // {
-                  acc = state.acc ++ (
-                    if state.dotted then
-                      collectionContents.acc
-                    else
-                      [
-                        (token // {
-                          value = collectionContents.acc;
-                          depth = token.depth - state.depthReduction;
-                        })
-                      ]
-                  );
-                  dotted = false;
-                }
-            else
-              state // {
-                acc = state.acc ++ [token];
-              };
-        in
-          (foldl' parseToken { acc = []; dotted = false; inList = false; depthReduction = 0; } tokens).acc;
 
       parseQuotes = tokens:
         let
@@ -493,7 +453,7 @@ let
         in
           (foldl' parseToken { acc = []; quotes = []; } tokens).acc;
     in
-      parseQuotes (parseDots (parseCollections (parseValues tokens)));
+      parseQuotes (parseCollections (parseValues tokens));
 
   parseElisp = elisp:
     parseElisp' (tokenizeElisp elisp);
