@@ -705,4 +705,5 @@ in
   inherit tokenizeElisp' parseElisp' fromElisp';
   inherit tokenizeOrgModeBabelElisp parseOrgModeBabelElisp fromOrgModeBabelElisp;
   inherit tokenizeOrgModeBabelElisp' parseOrgModeBabelElisp' fromOrgModeBabelElisp';
+  inherit parseOrgModeBabel;
 }
